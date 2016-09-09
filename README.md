@@ -136,11 +136,11 @@ if ($widgets->delete('57d1d2fc97aee')) {
 }
 ```
 
-Only the `add` method never returns `false`. As repeatedly mentioned, it will essentially `json_encode` any array you feed it, so doesn't really 'fail' as such, unless you don't send it an array. This has its own risks, so make sure you the data you feed isn't too weird!
+Only the `add` method never returns `false`. As repeatedly mentioned, it will essentially `json_encode` any array you feed it, so doesn't really 'fail' as such, unless you don't send it an array. This has its own risks, so make sure the data you feed it isn't too weird!
  
 ### Persistence
 
-You might sometimes want non-persistent collections, for example you might want to scaffold out a sub-model for ajax-y UI purposes, but it doesn't make sense for the data to persist since it ultimately gets saved to your parent model. Just over-ride the class `$persists` property and it will garbage collect once a day.
+You might sometimes want non-persistent collections, for example you might want to scaffold out a sub-model for ajax-y UI purposes, but it doesn't make sense for the data to persist in its own collection since it ultimately gets saved to the parent model/collection. For this use case, just over-ride the class `$persists` property and it will garbage collect once a day.
 
 ```
 protected $persists = false;
@@ -150,15 +150,16 @@ protected $persists = false;
 * Retrieve historical state/undo
 * Errors/Exceptions
 * More granular set method, i.e. just one property rather than the whole document.
-* Maybe some better query/search options, e.g. Fuzzy search / regex
-* docblocks / daux.io
-* tests
+* Some better query/search options, e.g. Fuzzy search / regex
+* Docblocks
+* Slightly more verbose documentation with Daux.io, with clearer explanations and some longer examples
+* Tests
 
 ### Maintained
 By [Moussa Clarke](https://github.com/moussaclarke/)
 
 ### Contribute
-Would be cool to improve this, so feel free to submit bug reports, suggestions and pull requests. Can't guarantee I've got enough time to do very much though! Alternatively just fork it and make your own thing.
+Feel free to submit bug reports, suggestions and pull requests, although can't guarantee I've got enough time to pay much attention to it. Alternatively just fork it and make your own thing.
 
 ### License
 MIT

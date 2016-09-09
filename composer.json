@@ -1,7 +1,7 @@
 {
     "name": "moussaclarke/planar",
     "description": "Flat File Json Database",
-    "keywords": ["db", "Database", "json", "flat file", "orm"],
+    "keywords": ["db", "database", "json", "flat file", "orm"],
     "homepage": "https://github.com/moussaclarke/beatportapi",
     "license": "MIT",
     "type": "library",
