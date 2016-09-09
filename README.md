@@ -1,11 +1,11 @@
 # Planar
 ## A super simple flat file json database / model
 
-Planar is a very basic flat file json database / model solution.
-
 Throughout this readme, 'document' and 'collection' are used in the MongoDb sense.
 
-Planar is simple, fast, super-flexible, and probably very brittle, but useful for small projects, where you have a relatively simple data structure, you don't need 1000s of documents and you only have a small amount of users with edit permissions.
+Planar is a very basic flat file json database / model solution.
+
+Planar is simple, fast, super-flexible, and probably very brittle. It's useful for small projects, where you have a relatively simple data structure, you don't need 1000s of documents and you only have a small amount of users with edit permissions.
 
 It probably won't scale well, there's no collision detection or record locking, and will most likely slow to a crawl once your collections get really large, but I've used it in production apps with 100s of documents and had zero issues so far.
 
@@ -60,11 +60,9 @@ Your initial property defaults would usually be an empty string, but you could a
 $schema = $widgets->getSchema();
 ```
 
-### Creating & updating
-
 It's up to you to then `add` or `set` it back to the collection once you've loaded the array with data.
 
-You don't need to worry about adding unique id or timestamp fields, those will be included automatically. `id` is simply a `uniqid()`, and `created` and `modified` are unix timestamps. Those three property names are therefore reserved, so don't try to have those in your data.
+### Creating & updating
 
 You can create a document with `add`. Just pass in an array of data (which simply gets json encoded), it will return the unique id of the new document.
 
@@ -77,6 +75,8 @@ $data = [
 ];
 $id = $widgets->add($data);
 ```
+
+You don't need to worry about adding unique id or timestamp fields, those will be created and updated automatically. `id` is simply a `uniqid()`, and `created` and `modified` are unix timestamps. Those three property names are therefore reserved, so try not to have those in your data/schema.
 
 If you know the id, you can replace a whole document with `set`.
 
@@ -104,7 +104,7 @@ $result = $widgets->find('id', '57d1d2fc97aee');
 $result = $widgets->all();
 ```
 
-You can also sort the `all` results in ascending order by passing in a property name.
+You can also sort the `all` results in ascending order by passing in a property name to sort by.
 
 ```
 $result = $widgets->all('price');
@@ -136,7 +136,7 @@ if ($widgets->delete('57d1d2fc97aee')) {
 }
 ```
 
-Only the `add` method never returns `false`. As repeatedly mentioned, it will essentially `json_encode` any array you feed it. This has its own risks, so make sure you don't feed it anything too weird!
+Only the `add` method never returns `false`. As repeatedly mentioned, it will essentially `json_encode` any array you feed it, so doesn't really 'fail' as such, unless you don't send it an array. This has its own risks, so make sure you the data you feed isn't too weird!
  
 ### Persistence
 
@@ -150,7 +150,9 @@ protected $persists = false;
 * Retrieve historical state/undo
 * Errors/Exceptions
 * More granular set method, i.e. just one property rather than the whole document.
-* Maybe some better query/search options, e.g. levenshtein
+* Maybe some better query/search options, e.g. Fuzzy search / regex
+* docblocks / daux.io
+* tests
 
 ### Maintained
 By [Moussa Clarke](https://github.com/moussaclarke/)
