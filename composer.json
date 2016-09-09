@@ -1,0 +1,21 @@
+{
+    "name": "moussaclarke/planar",
+    "description": "Flat File Json Database",
+    "keywords": ["db", "Database", "json", "flat file", "orm"],
+    "homepage": "https://github.com/moussaclarke/beatportapi",
+    "license": "MIT",
+    "type": "library",
+    "authors": [{
+        "name": "Moussa Clarke",
+        "email": "moussaclarke@gmail.com",
+        "homepage": "http://www.moussaclarke.co.uk"
+    }],
+    "autoload": {
+        "psr-4": {
+            "MoussaClarke\\": "src"
+        }
+    },
+    "require": {
+        "sebastian/diff": "*"
+    }
+}
