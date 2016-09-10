@@ -95,7 +95,7 @@ $result = $widgets->find('price', 5);
 `first` returns the first document it finds where the named property has a particular value.
 
 ```
-$result = $widgets->find('id', '57d1d2fc97aee');
+$result = $widgets->first('id', '57d1d2fc97aee');
 ```
 
 `all` returns the whole collection as an array, so you could perform more complicated queries on that.
