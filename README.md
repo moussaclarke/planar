@@ -50,17 +50,32 @@ protected $schema   = [
     'price' => '',
     'weight' => '',
     'subwidgets' => [],
-    'invoicedate' => date ('Y-m-d')
 ];
 ```
 
-Your initial property defaults would usually be an empty string, but you could also specify arrays or defaults or generated data like dates if you like. You can then grab your schema like this:
+Your initial property defaults would usually be an empty string or array, but you could also specify defaults. You can then grab your schema like this:
 
 ```
 $schema = $widgets->getSchema();
 ```
 
 It's up to you to then `add` or `set` it back to the collection once you've loaded the array with data.
+
+If you need to use any runtime values to set defaults then over-ride the `getSchema` method instead.
+
+```
+
+public function getSchema()
+{
+    return [
+        'name' => ''
+        'price' => '',
+        'weight' => '',
+        'subwidgets' => [],
+        'invoicedate' => date ('Y-m-d')
+    ];
+}
+```
 
 ### Creating & updating
 
