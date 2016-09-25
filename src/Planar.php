@@ -19,6 +19,7 @@ class Planar
         // get the short name via reflection as we are in a namespace
         $reflect              = new \ReflectionClass($this);
         $this->collectionname = $reflect->getShortName();
+        $this->backupfolder   = $datafolder . '/backups';
         $this->dbfile         = $datafolder . '/' . $this->collectionname . '.json';
         if (file_exists($this->dbfile)) {
             $this->data = json_decode(file_get_contents($this->dbfile), true);
@@ -172,8 +173,8 @@ class Planar
 
     protected function backup()
     {
-        if (!file_exists($datafolder . '/backups')) {
-            mkdir($datafolder . '/backups');
+        if (!file_exists($this->backupfolder)) {
+            mkdir($this->backupfolder);
         }
         $olddata = file_get_contents($this->dbfile);
         $newdata = json_encode($this->data, JSON_PRETTY_PRINT);
@@ -181,7 +182,7 @@ class Planar
         $datestring = date("YmdHis");
         $differ     = new Differ;
         $result     = $differ->diff($olddata, $newdata);
-        $backupfile = $datafolder . '/backups/' . $this->collectionname . '_' . $datestring . '.diff';
+        $backupfile = $this->backupfolder. '/' . $this->collectionname . '_' . $datestring . '.diff';
         file_put_contents($backupfile, $result);
     }
 
