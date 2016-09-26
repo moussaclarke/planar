@@ -6,13 +6,23 @@ use \SebastianBergmann\Diff\Differ;
 class Planar
 {
     protected $data;
+    protected $datafolder = null;
     protected $collectionname;
     protected $dbfile;
     protected $persists = true;
     protected $schema   = [];
 
-    public function __construct($datafolder)
+    public function __construct($datafolder = null)
     {
+        // if $datafolder not set, check the class property in case over-ridden
+        $datafolder = $datafolder ? $datafolder : $this->datafolder;
+
+        // if still not set, throw an exception
+        if (!$datafolder) {
+            throw new \Exception('Planar datafolder not set.');
+        }
+
+        // if the folder doesn't exist yet, let's make it
         if (!file_exists($datafolder)) {
             mkdir($datafolder);
         }
@@ -182,7 +192,7 @@ class Planar
         $datestring = date("YmdHis");
         $differ     = new Differ;
         $result     = $differ->diff($olddata, $newdata);
-        $backupfile = $this->backupfolder. '/' . $this->collectionname . '_' . $datestring . '.diff';
+        $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $datestring . '.diff';
         file_put_contents($backupfile, $result);
     }
 

@@ -40,6 +40,20 @@ You can then instantiate passing in a data folder location. The json and backup 
 $widgets  = new Widgets('path/to/data/folder');
 ```
 
+You can also set a data folder location by over-riding the datafolder property on the class.
+
+```
+protected $datafolder='path/to/data/folder';
+```
+
+You can then just do the following to instantiate:
+
+```
+$widgets = new Widgets;
+```
+
+You could set the data folder on a base model class, for example, which the concrete models extend.
+
 ### Schema
 
 You can add a schema for the document if you like - Planar won't do anything to enforce it, and each document could in fact have completely different elements - but it might be useful elsewhere in your app to get a default instance of the data if you're trying to maintain a more rigid model structure, i.e. as a kind of configuration info. To do this, just over-ride the `$schema` property at the top of your model class.
