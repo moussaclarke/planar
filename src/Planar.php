@@ -95,8 +95,8 @@ class Planar
                         return true;
                         break;
                     };
-                    return false;
                 }
+                return false;
             } elseif (strpos(strtolower($haystack), strtolower($needle)) !== false) {
                 return true;
             } else {
