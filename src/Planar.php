@@ -128,6 +128,7 @@ class Planar
         $properties['created']  = $oldversion['created'];
         $this->data[$id]        = $properties;
         $this->save();
+        return $id;
     }
 
     public function add(array $properties)
