@@ -127,7 +127,7 @@ class Planar
         $properties['modified'] = time();
         $properties['created']  = $oldversion['created'];
         $this->data[$id]        = $properties;
-        $this->save();
+        $this->save($id);
         return $id;
     }
 
@@ -138,7 +138,7 @@ class Planar
         $properties['id']      = $id;
         $properties['created'] = time();
         $this->data[$id]       = $properties;
-        $this->save();
+        $this->save($id);
         return $id;
     }
 
@@ -147,24 +147,24 @@ class Planar
         // deletes a document
         if ($this->first('id', $id)) {
             unset($this->data[$id]);
-            $this->save();
+            $this->save($id);
             return true;
         } else {
             return false;
         }
     }
 
-    protected function save()
+    protected function save($id)
     {
-        $this->preSaveTasks();
+        $this->preSaveTasks($id);
         $jsondata = json_encode($this->data, JSON_PRETTY_PRINT);
         file_put_contents($this->dbfile, $jsondata);
     }
 
-    protected function preSaveTasks()
+    protected function preSaveTasks($id)
     {
         if ($this->persists) {
-            $this->backup(); // backup persistent models
+            $this->backup($id); // backup persistent models
         } else {
             $this->garbage(); // garbage collect non-persistent models
         }
@@ -182,18 +182,18 @@ class Planar
         }
     }
 
-    protected function backup()
+    protected function backup($id)
     {
         if (!file_exists($this->backupfolder)) {
             mkdir($this->backupfolder);
         }
-        $olddata = file_get_contents($this->dbfile);
-        $newdata = json_encode($this->data, JSON_PRETTY_PRINT);
+        $olddata = json_encode(json_decode(file_get_contents($this->dbfile), true)[$id], JSON_PRETTY_PRINT);
+        $newdata = json_encode($this->data[$id], JSON_PRETTY_PRINT);
         //generate the diff
         $datestring = date("YmdHis");
         $differ     = new Differ;
         $result     = $differ->diff($olddata, $newdata);
-        $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $datestring . '.diff';
+        $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $id . '_' . $datestring . '.diff';
         file_put_contents($backupfile, $result);
     }
 
