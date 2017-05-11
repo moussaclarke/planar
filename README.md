@@ -142,7 +142,7 @@ $result = $widgets->all('price');
 `search` allows you to search for a term or phrase throughout the whole collection. It returns an array of documents where any property contains the value, and is case insensitive.
 
 ```
-$widgets->search('foo')
+$result = $widgets->search('foo')
 ```
 
 ### Deleting
