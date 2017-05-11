@@ -91,7 +91,7 @@ public function getSchema()
 }
 ```
 
-### Creating & updating
+### Creating & updating
 
 You can create a document with `add`. Just pass in an array of data (which simply gets json encoded), it will return the unique id of the new document.
 
@@ -166,8 +166,8 @@ if ($widgets->delete('57d1d2fc97aee')) {
 ```
 
 Only the `add` method never returns `false`. As repeatedly mentioned, it will essentially `json_encode` any array you feed it, so doesn't really 'fail' as such, unless you don't send it an array. This has its own risks, so make sure the data you feed it isn't too weird!
- 
-### Persistence
+
+### Persistence
 
 You might sometimes want non-persistent collections, for example you might want to scaffold out a sub-model for ajax-y UI purposes, but it doesn't make sense for the data to persist in its own collection since it ultimately gets saved to the parent model/collection. For this use case, just over-ride the class `$persists` property and it will garbage collect once a day.
 
