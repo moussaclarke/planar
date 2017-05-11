@@ -180,7 +180,7 @@ protected $persists = false;
 * Errors/Exceptions
 * More granular set method, i.e. just one property rather than the whole document.
 * Some better query/search options, e.g. Fuzzy search / regex
-* Docblocks
+* ~~Docblocks~~
 * Slightly more verbose documentation with Daux.io, with clearer explanations and some longer examples
 * Tests
 
@@ -188,7 +188,7 @@ protected $persists = false;
 By [Moussa Clarke](https://github.com/moussaclarke/)
 
 ### Contribute
-Feel free to submit bug reports, suggestions and pull requests, although can't guarantee I've got enough time to pay much attention to it. Alternatively just fork it and make your own thing.
+Feel free to submit bug reports, suggestions and pull requests. Alternatively just fork it and make your own thing.
 
 ### License
 MIT

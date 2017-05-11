@@ -3,15 +3,61 @@ namespace MoussaClarke;
 
 use \SebastianBergmann\Diff\Differ;
 
+/**
+* A simple json flat file/nosql database
+*
+* 'Collection' and 'document' are used in the MongoDB sense
+*
+* @author Moussa Clarke
+*/
 class Planar
 {
+    /**
+     * The data the collection contains
+     *
+     * @var array
+     */
     protected $data;
+    /**
+     * The location of the json database folder
+     * Can be set either by injecting into construct or over-riding in base extended class
+     *
+     * @var array
+     */
     protected $datafolder = null;
+    /**
+     * The name of the collection/model, uses the extended class name
+     *
+     * @var string
+     */
     protected $collectionname;
+    /**
+     * The location of the json database file
+     *
+     * @var string
+     */
     protected $dbfile;
+    /**
+     * Does this collection persist to database?
+     *
+     * @var bool
+     */
     protected $persists = true;
-    protected $schema   = [];
+    /**
+     * The schema for the collection
+     *
+     * @var array
+     */
+    protected $schema = [];
 
+    /**
+     * Construct the class
+     * Location of data folder can be injected
+     * The short name of the model class that extends this one will dictate the name of the json file
+     *
+     * @param string $datafolder
+     *
+     */
     public function __construct($datafolder = null)
     {
         // if $datafolder not set, check the class property in case over-ridden
@@ -34,22 +80,35 @@ class Planar
         if (file_exists($this->dbfile)) {
             $this->data = json_decode(file_get_contents($this->dbfile), true);
         } else {
-            $this->data = array();
+            $this->data = [];
             $this->save();
         }
 
     }
 
+    /**
+     * Get the collection schema
+     *
+     * @return array
+     */
     public function getSchema()
     {
         // return the schema, which might just be a blank array
         return $this->schema;
     }
 
+    /**
+     * Return an array of documents where property named $key has a particular $value
+     * Case sensitive, false if nothing found
+     *
+     * @param string $key
+     * @param string $value
+     * @return array|false
+     */
     public function find($key, $value)
     {
-        // return an array of documents where property named $key has a particular value
-        $found = array();
+        // search the data for the value
+        $found = [];
         foreach ($this->data as $item) {
             if ($item[$key] == $value) {
                 $found[] = $item;
@@ -58,9 +117,17 @@ class Planar
         return empty($found) ? false : $found;
     }
 
+    /**
+     * Return the first document where property named $key has a particular value
+     * Case sensitive, false if nothing found
+     *
+     * @param string $key
+     * @param string $value
+     * @return array|false
+     */
     public function first($key, $value)
     {
-        // return the first document where property named $key has a particular value
+        // search the data for the value, break on find
         $found = false;
         foreach ($this->data as $item) {
             if ($item[$key] == $value) {
@@ -71,6 +138,12 @@ class Planar
         return $found;
     }
 
+    /**
+     * Returns the whole collection, sorted by $sortby field
+     *
+     * @param string $sortby
+     * @return array
+     */
     public function all($sortby = null)
     {
         // returns the whole collection, sorted
@@ -84,10 +157,16 @@ class Planar
         return $data;
     }
 
+    /**
+     * return an array of documents where any property contains $value
+     * case insensitive
+     *
+     * @param string $value
+     * @return array|false
+     */
     public function search($value)
     {
-        // return an array of documents where any property contains $value
-        // case insensitive
+        // use recursive find algo to find all instances
         $recursiveFind = function ($needle, $haystack) use (&$recursiveFind) {
             if (is_array($haystack)) {
                 foreach ($haystack as $key => $itemvalue) {
@@ -104,7 +183,7 @@ class Planar
             }
         };
 
-        $found = array();
+        $found = [];
         foreach ($this->data as $item) {
             foreach ($item as $key => $itemvalue) {
                 if ($recursiveFind($value, $item[$key])) {
@@ -116,6 +195,13 @@ class Planar
         return empty($found) ? false : $found;
     }
 
+    /**
+     * Replace a document with $properties
+     * 
+     * @param string $id
+     * @param array $properties
+     * @return string|false
+     */
     public function set($id, array $properties)
     {
         // replaces a document
@@ -131,6 +217,13 @@ class Planar
         return $id;
     }
 
+    /**
+     * Add a new document to the collection with $properties
+     * Returns the new $id
+     *
+     * @param array $properties
+     * @return string
+     */
     public function add(array $properties)
     {
         // adds a document
@@ -142,9 +235,16 @@ class Planar
         return $id;
     }
 
+    /**
+     * Delete a document
+     * Returns boolean depending on success or failure
+     *
+     * @param string $id
+     * @return bool
+     */
     public function delete($id)
     {
-        // deletes a document
+        // find the document and delete it
         if ($this->first('id', $id)) {
             unset($this->data[$id]);
             $this->save($id);
@@ -154,6 +254,11 @@ class Planar
         }
     }
 
+    /**
+     * Save the collection data to json
+     *
+     * @param string $id
+     */
     protected function save($id)
     {
         $this->preSaveTasks($id);
@@ -161,6 +266,11 @@ class Planar
         file_put_contents($this->dbfile, $jsondata);
     }
 
+    /**
+     * Perform tasks that need doing before saving collection data
+     *
+     * @param string $id
+     */
     protected function preSaveTasks($id)
     {
         if ($this->persists) {
@@ -170,9 +280,13 @@ class Planar
         }
     }
 
+    /**
+    * Clear out non-persistent collections/models
+    * Deletes all documents that are at least one day old
+    */
     protected function garbage()
     {
-        // clear out non-persistent models, once a day
+        // once a day = 86400
         $allDocuments = $this->all();
         $now          = time();
         foreach ($allDocuments as $document) {
@@ -182,6 +296,11 @@ class Planar
         }
     }
 
+    /**
+     * Make a backup diff of the changed document
+     *
+     * @param string $id
+     */
     protected function backup($id)
     {
         if (!file_exists($this->backupfolder)) {
@@ -197,6 +316,11 @@ class Planar
         file_put_contents($backupfile, $result);
     }
 
+    /**
+     * Over-write the entire collection
+     *
+     * @param array $collection
+     */
     protected function overwrite(array $collection)
     {
         //overwrites all data without validating - destructive!
