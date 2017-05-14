@@ -4,12 +4,12 @@ namespace MoussaClarke;
 use \SebastianBergmann\Diff\Differ;
 
 /**
-* A simple json flat file/nosql database
-*
-* 'Collection' and 'document' are used in the MongoDB sense
-*
-* @author Moussa Clarke
-*/
+ * A simple json flat file/nosql database
+ *
+ * 'Collection' and 'document' are used in the MongoDB sense
+ *
+ * @author Moussa Clarke
+ */
 class Planar
 {
     /**
@@ -197,7 +197,7 @@ class Planar
 
     /**
      * Replace a document with $properties
-     * 
+     *
      * @param string $id
      * @param array $properties
      * @return string|false
@@ -281,9 +281,9 @@ class Planar
     }
 
     /**
-    * Clear out non-persistent collections/models
-    * Deletes all documents that are at least one day old
-    */
+     * Clear out non-persistent collections/models
+     * Deletes all documents that are at least one day old
+     */
     protected function garbage()
     {
         // once a day = 86400
@@ -309,11 +309,17 @@ class Planar
         $olddata = json_encode(json_decode(file_get_contents($this->dbfile), true)[$id], JSON_PRETTY_PRINT);
         $newdata = json_encode($this->data[$id], JSON_PRETTY_PRINT);
         //generate the diff
-        $datestring = date("YmdHis");
+        $timestamp  = time();
         $differ     = new Differ;
         $result     = $differ->diff($olddata, $newdata);
-        $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $id . '_' . $datestring . '.diff';
-        file_put_contents($backupfile, $result);
+        $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $id . '_backup.json';
+        if (file_exists(($backupfile))) {
+            $backupdata = json_decode(file_get_contents($backupfile), true);
+        } else {
+            $backupdata = [];
+        }
+        $backupdata[] = ['diff' => $result, 'timestamp' => $timestamp];
+        file_put_contents($backupfile, json_encode($backupdata, JSON_PRETTY_PRINT));
     }
 
     /**
