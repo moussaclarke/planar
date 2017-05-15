@@ -11,7 +11,7 @@ It probably won't scale well, there's no collision detection or record locking, 
 
 Planar creates json collections on the fly as needed, everything gets json encoded and stored in flat files. It is ORM-like, even though that's pretty much an irrelevant term since this is all json anyway, but you can do CRUD and simple queries on a 'model'-like object.
 
-It backs up every change using diffs, although there isn't any undo quite yet.
+It backs up every change using diffs to make undos possible.
 
 ## Disclaimer
 It's still pretty alpha, could break at any time, and I might make backwards incompatible changes without any warning. Don't use it for anything too business critical. You have been warned.
@@ -145,13 +145,31 @@ $result = $widgets->all('price');
 $result = $widgets->search('foo')
 ```
 
-### Deleting
+### Deleting & Undoing
 
 You can `delete` a document if you know the id.
 
 ```
 $widgets->delete('57d1d2fc97aee');
 ```
+
+You can easily retrieve the previous version of a document at the last save, in order to, for example, perform an undo.
+
+```
+// get the previous version
+$previous = $widgets->history('57d1d2fc97aee');
+// undo, i.e. set document to previous version 
+$widgets->set('57d1d2fc97aee', $previous);
+```
+
+You can retrieve older versions by specifying the amount of steps to go back.
+
+```
+// get the version of the document three saves ago
+$historical = $widgets->history('57d1d2fc97aee', 3);
+```
+
+NB: It's not currently possible to undelete. Should be relatively easy to implement though, so it's pencilled in for a future version.
 
 ### Failing
 
@@ -176,7 +194,8 @@ protected $persists = false;
 ```
 
 ### Todo
-* Retrieve historical state/undo
+* ~~Retrieve historical state/undo~~
+* Undelete
 * Errors/Exceptions
 * More granular set method, i.e. just one property rather than the whole document.
 * Some better query/search options, e.g. Fuzzy search / regex

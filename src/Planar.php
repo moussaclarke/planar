@@ -1,7 +1,7 @@
 <?php
 namespace MoussaClarke;
 
-use \SebastianBergmann\Diff\Differ;
+use \DiffMatchPatch\DiffMatchPatch;
 
 /**
  * A simple json flat file/nosql database
@@ -255,6 +255,32 @@ class Planar
     }
 
     /**
+     * Get historical version of the document
+     *
+     * @param string $id
+     * @param int $steps
+     * @return array|false
+     */
+    public function history($id, $steps = 1)
+    {
+        $result  = false;
+        if ($this->first('id', $id)) {
+            $version = json_encode($this->data[$id], JSON_PRETTY_PRINT);
+            $backupdata = $this->getBackupData($id);
+            $backupdata = array_reverse($backupdata);
+            $differ     = new DiffMatchPatch;
+            if (count($backupdata) >= $steps) {
+                for ($i = 0; $i < $steps; $i++) {
+                    $patch = $differ->patch_fromText($backupdata[$i]['diff']);
+                    $version = $differ->patch_apply($patch, $version)[0];
+                }
+                $result = $version;
+            }
+        }
+        return json_decode($result, true);
+    }
+
+    /**
      * Save the collection data to json
      *
      * @param string $id
@@ -309,17 +335,42 @@ class Planar
         $olddata = json_encode(json_decode(file_get_contents($this->dbfile), true)[$id], JSON_PRETTY_PRINT);
         $newdata = json_encode($this->data[$id], JSON_PRETTY_PRINT);
         //generate the diff
-        $timestamp  = time();
-        $differ     = new Differ;
-        $result     = $differ->diff($olddata, $newdata);
+        $timestamp    = time();
+        $differ       = new DiffMatchPatch;
+        $patch       = $differ->patch_make($newdata, $olddata);
+        $result = $differ->patch_toText($patch);
+        $backupdata   = $this->getBackupData($id);
+        $backupdata[] = ['diff' => $result, 'timestamp' => $timestamp];
+        $this->writeBackupData($id, $backupdata);
+    }
+
+    /**
+     * Get the backup data for a specific document
+     *
+     * @param string $id
+     * @return array
+     */
+    protected function getBackupData($id)
+    {
         $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $id . '_backup.json';
         if (file_exists(($backupfile))) {
             $backupdata = json_decode(file_get_contents($backupfile), true);
         } else {
             $backupdata = [];
         }
-        $backupdata[] = ['diff' => $result, 'timestamp' => $timestamp];
-        file_put_contents($backupfile, json_encode($backupdata, JSON_PRETTY_PRINT));
+        return $backupdata;
+    }
+
+    /**
+     * Store backup data for a specific document
+     *
+     * @param string $id
+     * @param array $backupdata
+     */
+    protected function writeBackupData($id, $data)
+    {
+        $backupfile = $this->backupfolder . '/' . $this->collectionname . '_' . $id . '_backup.json';
+        file_put_contents($backupfile, json_encode($data, JSON_PRETTY_PRINT));
     }
 
     /**

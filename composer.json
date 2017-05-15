@@ -16,6 +16,6 @@
         }
     },
     "require": {
-        "sebastian/diff": "*"
+        "yetanotherape/diff-match-patch": "^1.0"
     }
 }
