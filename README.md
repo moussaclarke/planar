@@ -142,10 +142,10 @@ $result = $widgets->all('price');
 `search` allows you to search for a term or phrase throughout the whole collection. It returns an array of documents where any property contains the value, and is case insensitive.
 
 ```
-$result = $widgets->search('foo')
+$result = $widgets->search('foo');
 ```
 
-### Deleting & Undoing
+### Deleting, Undoing & Restoring
 
 You can `delete` a document if you know the id.
 
@@ -153,12 +153,12 @@ You can `delete` a document if you know the id.
 $widgets->delete('57d1d2fc97aee');
 ```
 
-You can easily retrieve the previous version of a document at the last save, in order to, for example, perform an undo.
+You can easily retrieve the previous version of a document at the last save point, in order to, for example, perform an undo, as long as the collection is persistent.
 
 ```
 // get the previous version
 $previous = $widgets->history('57d1d2fc97aee');
-// undo, i.e. set document to previous version 
+// undo i.e. set document to previous version 
 $widgets->set('57d1d2fc97aee', $previous);
 ```
 
@@ -169,7 +169,14 @@ You can retrieve older versions by specifying the amount of steps to go back.
 $historical = $widgets->history('57d1d2fc97aee', 3);
 ```
 
-NB: It's not currently possible to undelete. Should be relatively easy to implement though, so it's pencilled in for a future version.
+While you can retrieve a deleted document with `history`, you can't `set` a document if it's been deleted. However you can `restore` a deleted document to its original id.
+
+```
+// delete the document
+$widgets->delete('57d1d2fc97aee');
+// and undelete it
+$widgets->restore('57d1d2fc97aee');
+```
 
 ### Failing
 
@@ -187,7 +194,7 @@ Only the `add` method never returns `false`. As repeatedly mentioned, it will es
 
 ### Persistence
 
-You might sometimes want non-persistent collections, for example you might want to scaffold out a sub-model for ajax-y UI purposes, but it doesn't make sense for the data to persist in its own collection since it ultimately gets saved to the parent model/collection. For this use case, just over-ride the class `$persists` property and it will garbage collect once a day.
+You might sometimes want non-persistent collections, for example you might want to instantiate an embedded model to scaffold out your UI, but it doesn't make sense for any data to persist within its own collection since that ultimately gets saved to the parent model/collection. For this use case, just over-ride the class `$persists` property and it will garbage collect once a day.
 
 ```
 protected $persists = false;
@@ -195,7 +202,7 @@ protected $persists = false;
 
 ### Todo
 * ~~Retrieve historical state/undo~~
-* Undelete
+* ~~Undelete~~
 * Errors/Exceptions
 * More granular set method, i.e. just one property rather than the whole document.
 * Some better query/search options, e.g. Fuzzy search / regex

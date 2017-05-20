@@ -263,21 +263,41 @@ class Planar
      */
     public function history($id, $steps = 1)
     {
-        $result  = false;
-        if ($this->first('id', $id)) {
-            $version = json_encode($this->data[$id], JSON_PRETTY_PRINT);
+        $result     = false;
+        $backupdata = $this->getBackupData($id);
+        if (!empty($backupdata)) {
+            $version    = json_encode($this->data[$id], JSON_PRETTY_PRINT);
             $backupdata = $this->getBackupData($id);
             $backupdata = array_reverse($backupdata);
             $differ     = new DiffMatchPatch;
             if (count($backupdata) >= $steps) {
                 for ($i = 0; $i < $steps; $i++) {
-                    $patch = $differ->patch_fromText($backupdata[$i]['diff']);
+                    $patch   = $differ->patch_fromText($backupdata[$i]['diff']);
                     $version = $differ->patch_apply($patch, $version)[0];
                 }
-                $result = $version;
+                $result = json_decode($version, true);
             }
         }
-        return json_decode($result, true);
+        return $result;
+    }
+
+    /**
+     * Restore a deleted document
+     *
+     * @param string $id
+     * @return string|false
+     */
+    public function restore($id)
+    {
+        // return false if record exists or no backup, i.e. nothing to undelete
+        if ($this->first($id) || empty($this->getBackupData($id))) {
+            return false;
+        }
+        $properties             = $this->history($id);
+        $properties['modified'] = time();
+        $this->data[$id]        = $properties;
+        $this->save($id);
+        return $id;
     }
 
     /**
@@ -337,8 +357,8 @@ class Planar
         //generate the diff
         $timestamp    = time();
         $differ       = new DiffMatchPatch;
-        $patch       = $differ->patch_make($newdata, $olddata);
-        $result = $differ->patch_toText($patch);
+        $patch        = $differ->patch_make($newdata, $olddata);
+        $result       = $differ->patch_toText($patch);
         $backupdata   = $this->getBackupData($id);
         $backupdata[] = ['diff' => $result, 'timestamp' => $timestamp];
         $this->writeBackupData($id, $backupdata);
