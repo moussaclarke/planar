@@ -1,7 +1,7 @@
 {
     "name": "moussaclarke/planar",
     "description": "Flat File Json Database",
-    "keywords": ["db", "database", "json", "flat file", "orm"],
+    "keywords": ["db", "database", "json", "flat file", "orm", "nosql"],
     "homepage": "https://github.com/moussaclarke/planar",
     "license": "MIT",
     "type": "library",

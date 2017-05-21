@@ -3,7 +3,7 @@
 
 Throughout this readme, 'document' and 'collection' are used in the MongoDb sense.
 
-Planar is a very basic flat file json database / model solution.
+Planar is a very basic flat file/nosql json database solution.
 
 Planar is simple, fast, super-flexible, and probably very brittle. It's useful for small projects, where you have a relatively simple data structure, you don't need 1000s of documents and you only have a small amount of users with edit permissions.
 
