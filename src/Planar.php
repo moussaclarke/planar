@@ -305,9 +305,11 @@ class Planar
      *
      * @param string $id
      */
-    protected function save($id)
+    protected function save($id=false)
     {
-        $this->preSaveTasks($id);
+        if ($id) {
+            $this->preSaveTasks($id);
+        }
         $jsondata = json_encode($this->data, JSON_PRETTY_PRINT);
         file_put_contents($this->dbfile, $jsondata);
     }
