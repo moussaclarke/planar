@@ -205,13 +205,13 @@ class Planar
     public function set($id, array $properties)
     {
         // replaces a document
-        $oldversion = $this->first('id', $id);
+        $oldversion = $this->first('_id', $id);
         if (!$oldversion) {
             return false;
         }
-        $properties['id']       = $id;
-        $properties['modified'] = time();
-        $properties['created']  = $oldversion['created'];
+        $properties['_id']       = $id;
+        $properties['_modified'] = time();
+        $properties['_created']  = $oldversion['_created'];
         $this->data[$id]        = $properties;
         $this->save($id);
         return $id;
@@ -228,8 +228,8 @@ class Planar
     {
         // adds a document
         $id                    = uniqid('');
-        $properties['id']      = $id;
-        $properties['created'] = time();
+        $properties['_id']      = $id;
+        $properties['_created'] = time();
         $this->data[$id]       = $properties;
         $this->save($id);
         return $id;
@@ -245,7 +245,7 @@ class Planar
     public function delete($id)
     {
         // find the document and delete it
-        if ($this->first('id', $id)) {
+        if ($this->first('_id', $id)) {
             unset($this->data[$id]);
             $this->save($id);
             return true;
@@ -294,7 +294,7 @@ class Planar
             return false;
         }
         $properties             = $this->history($id);
-        $properties['modified'] = time();
+        $properties['_modified'] = time();
         $this->data[$id]        = $properties;
         $this->save($id);
         return $id;
@@ -338,8 +338,8 @@ class Planar
         $allDocuments = $this->all();
         $now          = time();
         foreach ($allDocuments as $document) {
-            if ($now - $document['created'] > 86400) {
-                $this->delete($document['id']);
+            if ($now - $document['_created'] > 86400) {
+                $this->delete($document['_id']);
             }
         }
     }

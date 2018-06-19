@@ -105,7 +105,7 @@ $data = [
 $id = $widgets->add($data);
 ```
 
-You don't need to worry about adding unique id or timestamp fields, those will be created and updated automatically. `id` is simply a `uniqid()`, and `created` and `modified` are unix timestamps. Those three property names are therefore reserved, so try not to have those in your data/schema.
+You don't need to worry about adding unique id or timestamp fields, those will be created and updated automatically. `_id` is simply a `uniqid()`, and `_created` and `_modified` are unix timestamps. Those three property names, all prefixed with `_`, are therefore reserved, so try not to have those in your data/schema.
 
 If you know the id, you can replace a whole document with `set`.
 
@@ -124,7 +124,7 @@ $result = $widgets->find('price', 5);
 `first` returns the first document it finds where the named property has a particular value.
 
 ```
-$result = $widgets->first('id', '57d1d2fc97aee');
+$result = $widgets->first('_id', '57d1d2fc97aee');
 ```
 
 `all` returns the whole collection as an array, so you could perform more complicated queries on that.
