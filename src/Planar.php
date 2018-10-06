@@ -26,7 +26,7 @@ class Planar
      */
     protected $datafolder = null;
     /**
-     * The name of the collection/model, uses the extended class name
+     * The name of the collection/model, inject or use the extended class name
      *
      * @var string
      */
@@ -53,12 +53,12 @@ class Planar
     /**
      * Construct the class
      * Location of data folder can be injected
-     * The short name of the model class that extends this one will dictate the name of the json file
+     * If no collection name injected, the short name of the model class that extends this one will dictate the name of the json file
      *
      * @param string $datafolder
      *
      */
-    public function __construct($datafolder = null)
+    public function __construct($datafolder = null, $collectionname = null)
     {
         // if $datafolder not set, check the class property in case over-ridden
         $datafolder = $datafolder ? $datafolder : $this->datafolder;
@@ -72,9 +72,15 @@ class Planar
         if (!file_exists($datafolder)) {
             mkdir($datafolder);
         }
-        // get the short name via reflection as we are in a namespace
-        $reflect              = new \ReflectionClass($this);
-        $this->collectionname = $reflect->getShortName();
+        // get the collection name via class short name/reflection or injected
+        $reflect = new \ReflectionClass($this);
+        if ($reflect->getShortName() != "Planar") {
+            $this->collectionname = $reflect->getShortName();
+        } elseif ($collectionname) {
+            $this->collectionname = $collectionname;
+        } else {
+            throw new \Exception('Planar collection name not set.');
+        }
         $this->backupfolder   = $datafolder . '/backups';
         $this->dbfile         = $datafolder . '/' . $this->collectionname . '.json';
         if (file_exists($this->dbfile)) {

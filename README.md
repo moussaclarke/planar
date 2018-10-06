@@ -54,6 +54,12 @@ $widgets = new Widgets;
 
 You could set the data folder on a base model class, for example, which the concrete models extend.
 
+Alternatively, if you need things to be slightly less tightly coupled, you can also inject both data folder and collection name without extending the Planar class.
+
+```
+$widgets = new Planar('path/to/data/folder', 'Widgets');
+```
+
 ### Schema
 
 You can add a schema for the document if you like - Planar won't do anything to enforce it, and each document could in fact have completely different elements - but it might be useful elsewhere in your app to get a default instance of the data if you're trying to maintain a more rigid model structure, i.e. as a kind of configuration info. To do this, just over-ride the `$schema` property at the top of your model class.
