@@ -113,7 +113,7 @@ $id = $widgets->add($data);
 
 You don't need to worry about adding unique id or timestamp fields, those will be created and updated automatically. `_id` is simply a `uniqid()`, and `_created` and `_modified` are unix timestamps. Those three property names, all prefixed with `_`, are therefore reserved, so try not to have those in your data/schema.
 
-If you know the id, you can replace a whole document with `set`.
+If you know the id, you can replace a whole document with `set`. You can also use this to create a document with a specific id, although Planar won't warn you if it's over-writing anything.
 
 ```
 $widgets->set('57d1d2fc97aee', $data);

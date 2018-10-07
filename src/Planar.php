@@ -202,7 +202,7 @@ class Planar
     }
 
     /**
-     * Replace a document with $properties
+     * Replace or add a document with $properties using specific id
      *
      * @param string $id
      * @param array $properties
@@ -210,14 +210,15 @@ class Planar
      */
     public function set($id, array $properties)
     {
-        // replaces a document
+        // replace or add a document
         $oldversion = $this->first('_id', $id);
-        if (!$oldversion) {
-            return false;
-        }
         $properties['_id']       = $id;
-        $properties['_modified'] = time();
-        $properties['_created']  = $oldversion['_created'];
+        if ($oldversion) {
+            $properties['_created']  = $oldversion['_created'];
+            $properties['_modified'] = time();
+        } elseif (!$properties['_created']) {
+            $properties['_created'] = time();
+        }
         $this->data[$id]        = $properties;
         $this->save($id);
         return $id;
