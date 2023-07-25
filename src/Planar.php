@@ -22,7 +22,7 @@ class Planar
      * The location of the json database folder
      * Can be set either by injecting into construct or over-riding in base extended class
      *
-     * @var array
+     * @var string
      */
     protected $datafolder = null;
     /**
