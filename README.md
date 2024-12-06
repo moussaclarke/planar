@@ -1,9 +1,9 @@
 # Planar
 
-## ABANDONED
+## ABANDONED - DO NOT USE
 This was a useful project for me a while ago and taught me a lot about certain data concepts. I used it in production for a couple of internal projects at the time, but I don't anymore and no longer have the bandwidth to maintain it.
 
-If you need a similar nosql file based php db, you could take a look at [SleekDB](https://github.com/SleekDB/SleekDB) which seems to be actively maintained, or just stick with the relational paradigm and use [Eloquent](https://github.com/illuminate/database) with [SQLite](https://github.com/sqlite/sqlite).
+If you need a similar nosql file based php db, you could take a look at [SleekDB](https://github.com/SleekDB/SleekDB) which seems to be actively maintained at the time of writing this, or just stick with the relational paradigm and use [Eloquent](https://github.com/illuminate/database) with [SQLite](https://github.com/sqlite/sqlite).
 
 ## A super simple flat file json database / model
 
